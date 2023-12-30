@@ -1,6 +1,8 @@
 import { Quiz } from "../Quiz";
 import { IoManager } from "./IoManager";
 
+let GLOBALPROBLEMID = 0;
+
 export class QuizManager {
   private quizes: Quiz[];
 
@@ -9,11 +11,50 @@ export class QuizManager {
   }
 
   public start(roomId: string) {
-    const io = IoManager.getIo();
+    const quiz = this.getQuiz(roomId);
 
-    const quiz = this.quizes.find((x) => x.roomId === roomId);
+    if (!quiz) {
+      return;
+    }
 
-    quiz?.start();
+    quiz.start();
+  }
+
+  public addProblem(
+    roomId: string,
+    problem: {
+      title: string;
+      description: string;
+      image: string;
+      options: {
+        id: number;
+        title: string;
+      }[];
+      answer: 0 | 1 | 2 | 3;
+    }
+  ) {
+    const quiz = this.getQuiz(roomId);
+
+    if (!quiz) {
+      return;
+    }
+
+    quiz.addProblem({
+      ...problem,
+      startTime: new Date().getTime(),
+      submissions: [],
+      id: (GLOBALPROBLEMID++).toString(),
+    });
+  }
+
+  public next(roomId: string) {
+    const quiz = this.getQuiz(roomId);
+
+    if (!quiz) {
+      return;
+    }
+
+    quiz.next();
   }
 
   addUser(roomId: string, name: string) {
@@ -43,5 +84,10 @@ export class QuizManager {
     } else {
       return quiz.getCurrentState();
     }
+  }
+
+  addQuiz(roomId: string) {
+    const quiz = new Quiz(roomId);
+    this.quizes.push(quiz);
   }
 }

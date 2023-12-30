@@ -9,17 +9,17 @@ interface Submission {
   optionSelected: submission;
 }
 
-interface Problem {
+export interface Problem {
   id: string;
   title: string;
   description: string;
   image: string;
   answer: submission;
   startTime: number;
-  option: {
+  options: {
     id: number;
     title: string;
-  };
+  }[];
   submissions: Submission[];
 }
 
@@ -48,6 +48,7 @@ export class Quiz {
 
   addProblem(problem: Problem) {
     this.problems.push(problem);
+    console.log(this.problems);
   }
 
   start() {
